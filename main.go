@@ -1,6 +1,43 @@
 package main
 
 import (
+	"net/http"
+
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	libs "spajam/libs"
+)
+
+func Hello(c echo.Context) error {
+	return c.JSON(http.StatusOK, libs.ErrorResponse("Hello, World!"))
+}
+
+func main() {
+	godotenv.Load()
+
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
+	e.Use(middleware.CORS())
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: 1,
+	}))
+	e.Use(middleware.RemoveTrailingSlash())
+
+	v1 := e.Group("/v1")
+	e.IPExtractor = echo.ExtractIPFromXFFHeader()
+	v1.GET("/hello", Hello)
+
+	serverPort := ":8080"
+	e.Logger.Fatal(e.Start(serverPort))
+}
+
+/*package main
+
+import (
 	"fmt"
 	"os"
 	"time"
@@ -46,3 +83,4 @@ func main() {
 	}
 
 }
+*/
