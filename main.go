@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -10,8 +11,12 @@ import (
 	libs "spajam/libs"
 )
 
-func Hello(c echo.Context) error {
-	return c.JSON(http.StatusOK, libs.ErrorResponse("Hello, World!"))
+type ChatMessage struct {
+    ID         int64     `json:"id"`
+    MessageText string   `json:"message_text"`
+    SenderID   int       `json:"sender_id"`
+    IsHome     bool      `json:"is_home"`
+    CreatedAt  time.Time `json:"created_at"`
 }
 
 func main() {
@@ -31,8 +36,16 @@ func main() {
 	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	v1.GET("/hello", Hello)
 
-	serverPort := ":8080"
+	serverPort := ":3000"
 	e.Logger.Fatal(e.Start(serverPort))
+}
+
+func Hello(c echo.Context) error {
+	return c.JSON(http.StatusOK, libs.ErrorResponse("Hello, World!"))
+}
+
+func GetChats(c echo.Context) error {
+	return c.JSON(http.StatusOK, libs.ErrorResponse("Hello, World!"))
 }
 
 /*package main
