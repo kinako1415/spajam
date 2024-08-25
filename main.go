@@ -38,6 +38,7 @@ func main() {
 	v1 := e.Group("/v1")
 	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	v1.GET("/hello", Hello)
+	v1.GET("/getchats", GetChats)
 
 	serverPort := ":3000"
 	e.Logger.Fatal(e.Start(serverPort))
