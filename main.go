@@ -3,10 +3,13 @@ package main
 import (
 	"net/http"
 	"time"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 
 	libs "spajam/libs"
 )
@@ -45,7 +48,16 @@ func Hello(c echo.Context) error {
 }
 
 func GetChats(c echo.Context) error {
-	return c.JSON(http.StatusOK, libs.ErrorResponse("Hello, World!"))
+	dsn := os.Getenv("DSN")
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	var msgs []ChatMessage
+	db.Find(&msgs)
+	return c.JSON(http.StatusOK, msgs)
 }
 
 /*package main
